@@ -1,0 +1,24 @@
+html
+  head
+    title= title
+  body
+    <div style="display: flex; flex-direction: row;justify-content: space-around;align-items: flex-start;align-content: flex-start;">
+    
+        <div style="flex:1;">
+        h1= message
+        |
+        |
+        a(href='/logout') Logout
+        <br/>
+        <br/>
+        p
+          | !{files}
+        <br/>
+        </div>
+        <div style="flex:2;">
+        h2='RSS Feed'
+        <br/>
+<script src="//rss.bloople.net/?url=https%3A%2F%2Fwww.news-medical.net%2Ftag%2Ffeed%2FParkinsons-Disease.aspx&showtitle=false&type=js"></script>
+        
+        </div>
+</div>

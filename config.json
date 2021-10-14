@@ -1,17 +1,17 @@
 {
-    "GITHUB_CLIENT_ID": "66e75697b0dd3905d6f8",
-    "GITHUB_CLIENT_SECRET": "4bdea33aaacfad4383156c66c96d69bc39b4e2e8",
+    "GITHUB_CLIENT_ID": "816930a170c61cfab482",
+    "GITHUB_CLIENT_SECRET": "2e1ff39c4665bd2a093db2a2fff9e9a091f6b629",
     "FACEBOOK_CLIENT_ID": "410245020774113",
     "FACEBOOK_CLIENT_SECRET": "9e1f0927955ab78ad20e879141af202a",
     "TWITTER_CLIENT_ID": "aUXnTdtWOvrYnMf0E2Wx0Jm8F",
     "TWITTER_CLIENT_SECRET": "lpXkq3euCl7eTbXxoNVrK0I7oWMCB8pNE7rep4gn2pL9c0ViOV",
-    "GITHUB_CALLBACK": "http://127.0.0.1:3000/auth/github/callback",
-    "FACEBOOK_CALLBACK": "http://127.0.0.1:3000/auth/facebook/callback",
-    "TWITTER_CALLBACK": "http://127.0.0.1:3000/auth/twitter/callback",
+    "GITHUB_CALLBACK": "https://verbose-lovely-omelet.glitch.me/auth/github/callback",
+    "FACEBOOK_CALLBACK": "https://verbose-lovely-omelet.glitch.me/auth/facebook/callback",
+    "TWITTER_CALLBACK": "https://verbose-lovely-omelet.glitch.me/auth/twitter/callback",
     "db":{
-        "host": "localhost",
-        "user": "root",
-        "password":"root",
-        "database": "pd_db"
+        "host": "sql4.freesqldatabase.com",
+        "user": "sql4444384",
+        "password":"6yArPvHiYr",
+        "database": "sql4444384"
     }
 }

@@ -221,7 +221,7 @@ connection.connect((err) => {
 });
 
 app.get('/db/:table', function (req, res) {
-    connection.query(`SELECT * from ${table}`, function (err, rows, fields) {
+    connection.query(`SELECT * from ${req.params.table}`, function (err, rows, fields) {
         if (err) throw err
         res.json(rows);
     })

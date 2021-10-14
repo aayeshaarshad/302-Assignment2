@@ -1,21 +1,40 @@
-const express = require('express')
-const app = express();
 const port = 3000;
+
+const express = require('express')
+const mysql = require('mysql2');
 var session = require("express-session"),
 bodyParser = require("body-parser");
 var passport = require('passport');
 var GitHubStrategy = require('passport-github2').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
-app.use(express.static("public"));
-app.use(session({ secret: "cats" }));
+
+const app = express();
+app.use(session({
+    secret: "dobisteinMAnn", 
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.set('views', './views');
 app.set('view engine', 'pug');
-
 app.use(express.static('public'));
+
+
+const appConfig = require('./config.json');
+
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID == undefined? appConfig.GITHUB_CLIENT_ID : process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET == undefined? appConfig.GITHUB_CLIENT_SECRET : process.env.GITHUB_CLIENT_SECRET;
+const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID == undefined? appConfig.FACEBOOK_CLIENT_ID : process.env.FACEBOOK_CLIENT_ID;
+const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET == undefined? appConfig.FACEBOOK_CLIENT_SECRET : process.env.FACEBOOK_CLIENT_SECRET;
+const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID == undefined? appConfig.TWITTER_CLIENT_ID : process.env.TWITTER_CLIENT_ID;
+const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET == undefined? appConfig.TWITTER_CLIENT_SECRET : process.env.TWITTER_CLIENT_SECRET;
+const GITHUB_CALLBACK = process.env.GITHUB_CALLBACK == undefined? appConfig.GITHUB_CALLBACK : process.env.GITHUB_CALLBACK;
+const FACEBOOK_CALLBACK = process.env.FACEBOOK_CALLBACK == undefined? appConfig.FACEBOOK_CALLBACK : process.env.FACEBOOK_CALLBACK;
+const TWITTER_CALLBACK = process.env.TWITTER_CALLBACK == undefined? appConfig.TWITTER_CALLBACK : process.env.TWITTER_CALLBACK;
+
 const files2 = [];
 const path = require('path');
 const fs = require('fs');
@@ -34,22 +53,11 @@ fs.readdir(directoryPath, function (err, files) {
     });
 });
 
-
-const GITHUB_CLIENT_ID = '816930a170c61cfab482';
-const GITHUB_CLIENT_SECRET = '2dfe714d91f6cba820bb92da2b932873d31810ae';
-
-const fbid = '410245020774113';
-const fbsec ='9e1f0927955ab78ad20e879141af202a';
-
-
-const tid = 'aUXnTdtWOvrYnMf0E2Wx0Jm8F';
-const tsec = 'lpXkq3euCl7eTbXxoNVrK0I7oWMCB8pNE7rep4gn2pL9c0ViOV';
-
 const cache= new Map();
 const roles= new Map();
 
 passport.serializeUser(function (user, done) {
-    cache.set(user.id,user.displayName);
+    cache.set(user.id,user.displayName == null? user.username : user.displayName);
     done(null, user.id);
 });
 
@@ -63,7 +71,7 @@ passport.deserializeUser(function (id, done) {
 passport.use(new GitHubStrategy({
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: "http://127.0.0.1:3000/auth/github/callback",
+    callbackURL: GITHUB_CALLBACK,
     failureRedirect: '/login'
 },
     function (accessToken, refreshToken, profile, done) {
@@ -76,9 +84,9 @@ passport.use(new GitHubStrategy({
 
 
 passport.use(new FacebookStrategy({
-    clientID: fbid,
-    clientSecret: fbsec,
-    callbackURL: "http://localhost:3000/auth/facebook/callback"
+    clientID: FACEBOOK_CLIENT_ID,
+    clientSecret: FACEBOOK_CLIENT_SECRET,
+    callbackURL: FACEBOOK_CALLBACK
   },
   function (accessToken, refreshToken, profile, done) {
     // User.findOrCreate({ githubId: profile.id }, function (err, user) {
@@ -89,9 +97,9 @@ passport.use(new FacebookStrategy({
 ));
 
 passport.use(new TwitterStrategy({
-    consumerKey: tid,
-    consumerSecret: tsec,
-    callbackURL: "http://127.0.0.1:3000/auth/twitter/callback"
+    consumerKey: TWITTER_CLIENT_ID,
+    consumerSecret: TWITTER_CLIENT_SECRET,
+    callbackURL: TWITTER_CALLBACK
   },
   function(token, tokenSecret, profile, cb) {
     // User.findOrCreate({ twitterId: profile.id }, function (err, user) {
@@ -194,6 +202,23 @@ app.get('/logout', function(req, res){
     req.sessionID = null;
     cache.set(req.user,null);
     res.redirect('/');
+  });
+
+
+  const connection = mysql.createConnection(appConfig.db);
+  connection.connect((err) => {
+    if (err) throw err;
+    console.log('Database Connected!');
+  });
+
+  app.get('/q', function(req,res){
+    connection.query('SELECT * from Test', function (err, rows, fields) {
+        if (err) throw err
+      
+        //console.log('The solution is: ', rows)
+        
+        res.json(rows);
+      })
   });
 
 app.listen(port, () => {

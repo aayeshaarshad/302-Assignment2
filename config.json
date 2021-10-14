@@ -1,0 +1,17 @@
+{
+    "GITHUB_CLIENT_ID": "66e75697b0dd3905d6f8",
+    "GITHUB_CLIENT_SECRET": "4bdea33aaacfad4383156c66c96d69bc39b4e2e8",
+    "FACEBOOK_CLIENT_ID": "410245020774113",
+    "FACEBOOK_CLIENT_SECRET": "9e1f0927955ab78ad20e879141af202a",
+    "TWITTER_CLIENT_ID": "aUXnTdtWOvrYnMf0E2Wx0Jm8F",
+    "TWITTER_CLIENT_SECRET": "lpXkq3euCl7eTbXxoNVrK0I7oWMCB8pNE7rep4gn2pL9c0ViOV",
+    "GITHUB_CALLBACK": "http://127.0.0.1:3000/auth/github/callback",
+    "FACEBOOK_CALLBACK": "http://127.0.0.1:3000/auth/facebook/callback",
+    "TWITTER_CALLBACK": "http://127.0.0.1:3000/auth/twitter/callback",
+    "db":{
+        "host": "localhost",
+        "user": "root",
+        "password":"root",
+        "database": "pd_db"
+    }
+}

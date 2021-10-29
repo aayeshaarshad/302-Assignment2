@@ -237,6 +237,10 @@ app.get('/spiral', function(req,res){
         res.sendFile('public/spiral/index.html', { root: __dirname });
 });
 
+app.get('/tap', function(req,res){
+    res.sendFile('public/tapping/index.html', { root: __dirname });
+});
+
 
 app.get('/geo', function(req,res){
     res.sendFile('public/geo.html', { root: __dirname });

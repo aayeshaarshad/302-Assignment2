@@ -9,6 +9,7 @@ var GitHubStrategy = require('passport-github2').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 
+
 const app = express();
 app.use(session({
     secret: "dobisteinMAnn",
@@ -165,7 +166,7 @@ app.get('/facebook', function (req, res) {
             res.render('facebook', { title: 'Researcher', message: `Welcome! (Researcher)!`, files: [] });
         }
     } else {
-        res.render('404',{title: 'Error', message: 'No data found on account.'});
+        res.render('404', { title: 'Error', message: 'No data found on account.' });
     }
 })
 
@@ -178,11 +179,11 @@ app.get('/twitter', function (req, res) {
 
                 res.render('twitter', { title: 'Physician', message: `Welcome ${a} (Physician)!`, files: getFiles2(rows) });
             });
-        }else{
+        } else {
             res.render('twitter', { title: 'Physician', message: `Welcome (Physician)!`, files: [] });
         }
-    }else{
-        res.render('404',{title: 'Error', message: 'No data found on account.'});
+    } else {
+        res.render('404', { title: 'Error', message: 'No data found on account.' });
     }
 })
 
@@ -216,8 +217,11 @@ function getFiles2(files) {
 
 const connection = mysql.createConnection(appConfig.db);
 connection.connect((err) => {
-    if (err) throw err;
-    console.log('Database Connected!');
+    if (err) {
+        console.log('Could not connect to database!');
+    }else{
+        console.log('Database Connected!');
+    }
 });
 
 app.get('/db/:table', function (req, res) {
@@ -226,6 +230,335 @@ app.get('/db/:table', function (req, res) {
         res.json(rows);
     })
 });
+
+const { JSDOM } = require('jsdom');
+
+app.get('/spiral', function(req,res){
+        res.sendFile('public/spiral/index.html', { root: __dirname });
+});
+
+
+app.get('/geo', function(req,res){
+    res.sendFile('public/geo.html', { root: __dirname });
+});
+
+
+
+// app.get('/graph', async function (req, res) {
+//     var d3 = await import('d3');
+//     {
+//         try {
+//             let body = plotSpiral(d3);
+
+//         // body.append("svg")
+//         //     .attr("version", "1.1")
+//         //     .attr("xmlns", d3.namespaces.svg)
+//         //     .attr("xmlns:xlink", d3.namespaces.xlink)
+//         //     .attr("width", 1000)
+//         //     .attr("height", 500)
+//         //     .attr("viewBox", "0 0 " + width + " " + height);
+
+//         //process.stdout.write(body.node().innerHTML);
+//         res.render('graph', { title: 'Researcher', message: `Welcome (Researcher)!`, graph: body.node().innerHTML });
+//         } catch (error) {
+//             res.render('graph', { title: 'Researcher', message: `Welcome (Researcher)!`, graph: 'could not draw graph!' });
+//         }
+        
+//     }//);
+// });
+
+function plotSpiral(d3) {
+
+    CreateSVG(d3);
+    let { document } = (new JSDOM('')).window;
+    let body = d3.select(document).select('body');
+    var xmlns = "http://www.w3.org/2000/svg";
+    // var boxWidth = 500;
+    // var boxHeight = 500;
+
+    // var svgElem = document.createElementNS(xmlns, "svg");
+    // svgElem.setAttributeNS(null, "viewBox", "0 0 " + boxWidth + " " + boxHeight);
+    // svgElem.setAttributeNS(null, "width", boxWidth);
+    // svgElem.setAttributeNS(null, "height", boxHeight);
+    // svgElem.style.display = "block";
+
+    // var g = document.createElementNS(xmlns, "g");
+    // svgElem.appendChild(g);
+    // g.setAttributeNS(null, 'transform', "translate(" + boxWidth / 2 + "," + boxHeight / 2 + ")");
+
+    var width = 500,
+        height = 500,
+        start = 0,
+        end = 2.25,
+        numSpirals = 3
+    margin = { top: 50, bottom: 50, left: 50, right: 50 };
+
+    var theta = function (r) {
+        return numSpirals * Math.PI * r;
+    };
+
+    // used to assign nodes color by group
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var r = d3.min([width, height]) / 2 - 40;
+
+    var radius = d3.scaleLinear()
+        .domain([start, end])
+        .range([40, r]);
+
+    var svg = body.append("svg")
+        .attr("version", "1.1")
+        .attr("xmlns", d3.namespaces.svg)
+        .attr("xmlns:xlink", d3.namespaces.xlink)
+        .attr("width", width + margin.right + margin.left)
+        .attr("height", height + margin.left + margin.right)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    var points = d3.range(start, end + 0.001, (end - start) / 1000);
+
+    var spiral = d3.radialLine()
+        .curve(d3.curveCardinal)
+        .angle(theta)
+        .radius(radius);
+
+    // var path = document.createElementNS(xmlns, "path");
+    // path.setAttributeNS(null,"id","spiral");
+    // path.setAttributeNS(null, 'stroke', "steelblue");
+    // //path.setAttributeNS(null, 'stroke-width', 10);
+    // //path.setAttributeNS(null, 'stroke-linejoin', "round");
+    // path.setAttributeNS(null, 'd', spiral);
+    // path.setAttributeNS(null, 'fill', "none");
+    // path.dataset = [points];
+    // //path.setAttributeNS(null, 'opacity', 1.0);
+
+
+    var path = svg.append('path')
+        .datum(points)
+        .attr("id", "spiral")
+        .attr("d", spiral)
+        .style("fill", "none")
+        .style("stroke", "steelblue");
+
+    //svg._groups[0][0].appendChild(path);
+    //svg.appendChild(path);
+
+    var spiralLength = path.node().getTotalLength(),
+        N = 365,
+        barWidth = (spiralLength / N) - 1;
+    var someData = [];
+    for (var i = 0; i < N; i++) {
+        var currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + i);
+        someData.push({
+            date: currentDate,
+            value: Math.random(),
+            group: currentDate.getMonth()
+        });
+    }
+
+    var timeScale = d3.scaleTime()
+        .domain(d3.extent(someData, function (d) {
+            return d.date;
+        }))
+        .range([0, spiralLength]);
+
+    // yScale for the bar height
+    var yScale = d3.scaleLinear()
+        .domain([0, d3.max(someData, function (d) {
+            return d.value;
+        })])
+        .range([0, (r / numSpirals) - 30]);
+
+    svg.selectAll("rect")
+        .data(someData)
+        .enter()
+        .append("rect")
+        .attr("x", function (d, i) {
+
+            var linePer = timeScale(d.date),
+                posOnLine = path.node().getPointAtLength(linePer),
+                angleOnLine = path.node().getPointAtLength(linePer - barWidth);
+
+            d.linePer = linePer; // % distance are on the spiral
+            d.x = posOnLine.x; // x postion on the spiral
+            d.y = posOnLine.y; // y position on the spiral
+
+            d.a = (Math.atan2(angleOnLine.y, angleOnLine.x) * 180 / Math.PI) - 90; //angle at the spiral position
+
+            return d.x;
+        })
+        .attr("y", function (d) {
+            return d.y;
+        })
+        .attr("width", function (d) {
+            return barWidth;
+        })
+        .attr("height", function (d) {
+            return yScale(d.value);
+        })
+        .style("fill", function (d) { return color(d.group); })
+        .style("stroke", "none")
+        .attr("transform", function (d) {
+            return "rotate(" + d.a + "," + d.x + "," + d.y + ")"; // rotate the bar
+        });
+
+    // add date labels
+    var tF = d3.timeFormat("%b %Y"),
+        firstInMonth = {};
+
+    svg.selectAll("text")
+        .data(someData)
+        .enter()
+        .append("text")
+        .attr("dy", 10)
+        .style("text-anchor", "start")
+        .style("font", "10px arial")
+        .append("textPath")
+        // only add for the first of each month
+        .filter(function (d) {
+            var sd = tF(d.date);
+            if (!firstInMonth[sd]) {
+                firstInMonth[sd] = 1;
+                return true;
+            }
+            return false;
+        })
+        .text(function (d) {
+            return tF(d.date);
+        })
+        // place text along spiral
+        .attr("xlink:href", "#spiral")
+        .style("fill", "grey")
+        .attr("startOffset", function (d) {
+            return ((d.linePer / spiralLength) * 100) + "%";
+        })
+
+
+    var tooltip = d3.select("#chart")
+        .append('div')
+        .attr('class', 'tooltip');
+
+    tooltip.append('div')
+        .attr('class', 'date');
+    tooltip.append('div')
+        .attr('class', 'value');
+
+    svg.selectAll("rect")
+        .on('mouseover', function (d) {
+
+            tooltip.select('.date').html("Date: <b>" + d.date.toDateString() + "</b>");
+            tooltip.select('.value').html("Value: <b>" + Math.round(d.value * 100) / 100 + "<b>");
+
+            d3.select(this)
+                .style("fill", "#FFFFFF")
+                .style("stroke", "#000000")
+                .style("stroke-width", "2px");
+
+            tooltip.style('display', 'block');
+            tooltip.style('opacity', 2);
+
+        })
+        .on('mousemove', function (d) {
+            tooltip.style('top', (d3.event.layerY + 10) + 'px')
+                .style('left', (d3.event.layerX - 25) + 'px');
+        })
+        .on('mouseout', function (d) {
+            d3.selectAll("rect")
+                .style("fill", function (d) { return color(d.group); })
+                .style("stroke", "none")
+
+            tooltip.style('display', 'none');
+            tooltip.style('opacity', 0);
+        });
+
+    return body;
+}
+
+function CreateSVG(d3) {
+    let { document } = (new JSDOM('')).window;
+    var xmlns = "http://www.w3.org/2000/svg";
+
+    var boxWidth = 500,
+    boxHeight = 500,
+        start = 0,
+        end = 2.25,
+        numSpirals = 3
+    margin = { top: 50, bottom: 50, left: 50, right: 50 };
+
+    var theta = function (r) {
+        return numSpirals * Math.PI * r;
+    };
+
+    // used to assign nodes color by group
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var r = d3.min([boxWidth, boxHeight]) / 2 - 40;
+
+    var radius = d3.scaleLinear()
+        .domain([start, end])
+        .range([40, r]);
+
+    var svgElem = document.createElementNS(xmlns, "svg");
+    svgElem.setAttributeNS(null, "viewBox", "0 0 " + boxWidth + " " + boxHeight);
+    svgElem.setAttributeNS(null, "width", boxWidth);
+    svgElem.setAttributeNS(null, "height", boxHeight);
+    //svgElem.style.display = "block";
+
+    var g = document.createElementNS(xmlns, "g");
+    svgElem.appendChild(g);
+    g.setAttributeNS(null, 'transform', "translate(" + boxWidth / 2 + "," + boxHeight / 2 + ")");
+
+    var points = d3.range(start, end + 0.001, (end - start) / 1000);
+
+    var spiral = d3.radialLine()
+        .curve(d3.curveCardinal)
+        .angle(theta)
+        .radius(radius);
+
+    // draw linear gradient
+    // var defs = document.createElementNS(xmlns, "defs");
+    // var grad = document.createElementNS(xmlns, "linearGradient");
+    // grad.setAttributeNS(null, "id", "gradient");
+    // grad.setAttributeNS(null, "x1", "0%");
+    // grad.setAttributeNS(null, "x2", "0%");
+    // grad.setAttributeNS(null, "y1", "100%");
+    // grad.setAttributeNS(null, "y2", "0%");
+    // var stopTop = document.createElementNS(xmlns, "stop");
+    // stopTop.setAttributeNS(null, "offset", "0%");
+    // stopTop.setAttributeNS(null, "stop-color", "#ff0000");
+    // grad.appendChild(stopTop);
+    // var stopBottom = document.createElementNS(xmlns, "stop");
+    // stopBottom.setAttributeNS(null, "offset", "100%");
+    // stopBottom.setAttributeNS(null, "stop-color", "#0000ff");
+    // grad.appendChild(stopBottom);
+    // defs.appendChild(grad);
+    // g.appendChild(defs);
+
+    // // draw borders
+    // var coords = "M 0, 0";
+    // coords += " l 0, 300";
+    // coords += " l 300, 0";
+    // coords += " l 0, -300";
+    // coords += " l -300, 0";
+
+    var path = document.createElementNS(xmlns, "path");
+    //path.setAttributeNS(null, 'stroke-width', 10);
+    //path.setAttributeNS(null, 'stroke-linejoin', "round");
+    path.setAttributeNS(null, 'id', "spiral");
+    path.setAttributeNS(null, 'd', spiral);
+    path.setAttributeNS(null, 'fill', "none");
+    path.setAttributeNS(null, 'stroke', "steelblue");
+    //path.setAttributeNS(null, 'opacity', 1.0);
+    let gg = d3.select(document).select('#spiral').datum(points);
+    g.appendChild(path);
+    let b = gg.node();
+    let a = path.node();
+    
+
+    var svgContainer = document.getElementById("svgContainer");
+    svgContainer.appendChild(svgElem);
+}
 
 app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`)

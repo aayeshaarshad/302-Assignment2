@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Final Map</title>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//d3js.org/topojson.v1.min.js"></script>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+
+        .boundary {
+            fill: none;
+            stroke: #dfdfdf;
+            stroke-linejoin: round;
+        }
+
+        #map {
+            text-align: center;
+        }
+
+
+        circle {
+            fill: blue;
+            opacity:.9;
+        }
+
+        text{
+            font-family: 'PT Sans', sans-serif;
+            font-weight: 300;
+            font-size: 12px;
+            z-index: 900;
+        }
+        #tooltip{
+            position: absolute;
+            z-index: 2;
+            background: rgba(198, 92, 1, 0.80);
+            width:130px;
+            height:20px;
+            color:white;
+            font-size: 14px;
+            padding:5px;
+            top:-150px;
+            left:-150px;
+            font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="tooltip"></div>
+
+    <script>
+        var height = 600;
+        var width = 900, centered;
+
+        var projection = d3.geo.albersUsa();
+        
+        var path = d3.geo.path().projection(projection);
+
+        var svg = d3.select("#map")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+        var g = svg.append("g");
+
+        d3.json('/json/us.json', function(us) {
+            console.log("usa", us);
+
+            var map = svg.append('g').attr('class', 'boundary');
+            usa = map.selectAll('path')
+                     .data(topojson.feature(us, us.objects.states).features);
+
+            usa.enter()
+                    .append('path')
+                    .attr('d', path)
+                    .attr('fill', 'gray');
+
+
+        d3.json('/json/newstorelocations.json', function (locations){
+            console.log('stores', locations);
+
+           svg.selectAll('circle')
+                    .data(locations)
+                    .enter()
+                    .append('circle')
+                    .attr('cx', function(d) {return projection([d.lon, d.lat])[0]})
+                    .attr('cy', function(d) {return projection([d.lon, d.lat])[1]})
+                    .attr('r', 4)
+                   .on("mouseover", function(b){
+                       console.log("binish", b)
+                       d3.select(this).style("fill", "red").append('text')
+                       .text("hi");
+                   })
+                   .on("mouseout", function(){d3.select(this).style("fill", "blue");
+                   });
+
+
+
+        });
+        });
+
+
+    </script>
+</body>
+</html>

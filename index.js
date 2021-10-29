@@ -238,7 +238,7 @@ app.get('/spiral', function(req,res){
 });
 
 app.get('/tap', function(req,res){
-    res.sendFile('public/tapping/index.html', { root: __dirname });
+    res.sendFile('public/tap/index.html', { root: __dirname });
 });
 
 

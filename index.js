@@ -1,4 +1,4 @@
-const port = 80;
+const port = 8080;
 
 const express = require('express')
 const mysql = require('mysql2');
@@ -251,7 +251,7 @@ app.get('/tap/:fileURL', function(req,res){
 
 
 app.get('/geo', function(req,res){
-    res.sendFile('public/map/index.html', { root: __dirname });
+    res.sendFile('public/geo.html', { root: __dirname });
 });
 
 app.get('/weekly', function(req,res){
@@ -267,6 +267,14 @@ app.get('/activity/:username',function(req,res){
     and t.Therapy_IDtherapy=th.therapyID 
     and USer_IDmed=m.userID and User_IDpatient=p.userID and p.username='${username}'
     group by yearweek(dateTime)`, function (err, rows, fields) {
+        if (err) throw err
+        res.json(rows);
+    });
+
+});
+
+app.get('/position',function(req,res){
+    connection.query(`select username, Lat, u.Long from User u where Role_IDrole=1`, function (err, rows, fields) {
         if (err) throw err
         res.json(rows);
     });

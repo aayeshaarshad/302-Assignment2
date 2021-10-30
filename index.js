@@ -192,6 +192,8 @@ app.get('/twitter', function (req, res) {
 
 app.get('/logout', function (req, res) {
     res.clearCookie('username');
+    res.clearCookie('spiralFile');
+    res.clearCookie('tapFile');
     req.logout();
     req.sessionID = null;
     cache.set(req.user, null);
@@ -211,7 +213,7 @@ function getFiles2(files) {
         html = html + "<p>No patients' data found!</p>";
     } else {
         for (let f of files) {
-            let b = `<b>${f.username}: </b><a href="${'/data/' + f.dataURL + ".csv"}"> ${f.dataURL}</a><br/>`;
+            let b = `<b>${f.username}: </b><a href="${'/data/' + f.dataURL + ".csv"}"> ${f.dataURL}</a> <a href="/spiral/${f.dataURL}">Spiral Plot</a>  <a href="/tap/${f.dataURL}">Tapping Data Plot</a><br/>`;
             html = html + "" + b;
         }
     }
@@ -234,12 +236,14 @@ app.get('/db/:table', function (req, res) {
     })
 });
 
-app.get('/spiral', function(req,res){
-        res.sendFile('public/spiral/index.html', { root: __dirname });
+app.get('/spiral/:fileURL', function(req,res){
+    let file = req.params.fileURL;
+    res.cookie('spiralFile',file).sendFile('public/spiral/index.html', { root: __dirname });
 });
 
-app.get('/tap', function(req,res){
-    res.sendFile('public/tap/index.html', { root: __dirname });
+app.get('/tap/:fileURL', function(req,res){
+    let file = req.params.fileURL;
+    res.cookie('tapFile',file).sendFile('public/tap/index.html', { root: __dirname });
 });
 
 
@@ -268,7 +272,7 @@ app.get('/activity/:username',function(req,res){
 
 
 app.get('/github2', function (req, res) {
-    let a = 'patient1';
+    let a = 'ayesha';
     res.cookie('username',a).render('github', { title: 'Patient', message: `Welcome ${a} (Patient)!`});
 })
 

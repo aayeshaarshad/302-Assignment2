@@ -17,8 +17,17 @@ var svg = d3.select("#chart").append("svg")
   .append("g");
 
 
+let filename = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('spiralFile='))
+    .split('=')[1];
 
-d3.csv("../data/data1.csv", function(data) {
+d3.csv(`../data/${filename}.csv`, function(data) {
+  if(!data.length>0 || !data[0].X || !data[0].Y ||!data[0].time){
+    alert('Data does not meet criteria of the graph.');
+    return;
+  }
+
   for (var i = 0; i < data.length; i++) {
     mydata.push(
     {x: parseInt(data[i].X),

@@ -40,10 +40,19 @@ var blueGradient = svg.append("svg:defs")
   .attr("stop-opacity", 1);
 }
 
-d3.csv("../data/data2.csv", function (data) {
-  var mydata = [];
+let filename = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('tapFile='))
+    .split('=')[1];
 
+d3.csv(`../data/${filename}.csv`, function(data) {
+  var mydata = [];
+  if(!data.length>0 || !data[0].button || !data[0].correct){
+    alert('Data does not meet criteria of the graph.');
+    return;
+  }
   for (var i = 0; i < data.length; i++) {
+    
     mydata.push(
       {
         index: i,

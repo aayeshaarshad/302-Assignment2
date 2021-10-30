@@ -9,9 +9,9 @@
     "FACEBOOK_CALLBACK": "https://verbose-lovely-omelet.glitch.me/auth/facebook/callback",
     "TWITTER_CALLBACK": "https://verbose-lovely-omelet.glitch.me/auth/twitter/callback",
     "db":{
-        "host": "sql4.freesqldatabase.com",
-        "user": "sql4444384",
-        "password":"6yArPvHiYr",
-        "database": "sql4444384"
+        "host": "sql11.freesqldatabase.com",
+        "user": "sql11447862",
+        "password":"bNzJkEweVX",
+        "database": "sql11447862"
     }
 }

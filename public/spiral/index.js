@@ -18,7 +18,7 @@ var svg = d3.select("#chart").append("svg")
 
 
 
-d3.csv("../data/data2.csv", function(data) {
+d3.csv("../data/data1.csv", function(data) {
   for (var i = 0; i < data.length; i++) {
     mydata.push(
     {x: parseInt(data[i].X),

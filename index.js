@@ -147,6 +147,7 @@ app.get('/github', function (req, res) {
     if (req.user && cache.has(req.user)) {
         let a = cache.get(req.user);
         if (a && a != null) {
+            a = "patient1";
             res.render('github', { title: 'Patient', message: `Welcome ${a} (Patient)!` });
             return;
         }
@@ -159,6 +160,7 @@ app.get('/facebook', function (req, res) {
     if (req.user && cache.has(req.user)) {
         let a = cache.get(req.user);
         if (a && a != null) {
+            a = 'researcher';
             connection.query(`select ts.dataURL,p.username from Test_Session ts, Test t, Therapy th, User p, User m  where ts.test_SessionID=t.testID and t.Therapy_IDtherapy=th.therapyID and USer_IDmed=m.userID and User_IDpatient=p.userID and m.username='${a}';`, function (err, rows, fields) {
                 if (err) throw err;
 
@@ -176,6 +178,7 @@ app.get('/twitter', function (req, res) {
     if (req.user && cache.has(req.user)) {
         let a = cache.get(req.user);
         if (a && a != null) {
+            a = 'doc';
             connection.query(`select ts.dataURL,p.username from Test_Session ts, Test t, Therapy th, User p, User m  where ts.test_SessionID=t.testID and t.Therapy_IDtherapy=th.therapyID and USer_IDmed=m.userID and User_IDpatient=p.userID and m.username='${a}';`, function (err, rows, fields) {
                 if (err) throw err;
 
@@ -271,8 +274,8 @@ app.get('/activity/:username',function(req,res){
 });
 
 
-app.get('/github2', function (req, res) {
-    let a = 'ayesha';
+app.get('/github2/:username', function (req, res) {
+    let a = req.params.username;
     res.cookie('username',a).render('github', { title: 'Patient', message: `Welcome ${a} (Patient)!`});
 })
 

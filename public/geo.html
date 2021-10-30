@@ -5,6 +5,7 @@
     <title>Final Map</title>
     <script src="//d3js.org/d3.v3.min.js"></script>
     <script src="//d3js.org/topojson.v1.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <style>
 
@@ -57,10 +58,10 @@
     <div id="tooltip"></div>
 
     <script>
-        var height = 600;
-        var width = 900, centered;
+        var height = 1200;
+        var width = 1800, centered;
 
-        var projection = d3.geo.albersUsa();
+        var projection = d3.geo.equirectangular();
         
         var path = d3.geo.path().projection(projection);
 
@@ -71,33 +72,33 @@
 
         var g = svg.append("g");
 
-        d3.json('/json/us.json', function(us) {
-            console.log("usa", us);
-
-            var map = svg.append('g').attr('class', 'boundary');
-            usa = map.selectAll('path')
-                     .data(topojson.feature(us, us.objects.states).features);
-
-            usa.enter()
-                    .append('path')
-                    .attr('d', path)
-                    .attr('fill', 'gray');
-
-
-        d3.json('/json/newstorelocations.json', function (locations){
-            console.log('stores', locations);
-
+      
+      
+      d3.json("https://unpkg.com/world-atlas@1/world/110m.json", function(error, world) {
+      if (error) throw error;
+        var map = svg.append('g').attr('class', 'boundary');
+        var world = svg.selectAll("path")
+                   .data(topojson.feature(world,world.objects.countries).features);
+                   // .enter().append("path")
+                   // .attr("d", path);
+         world.enter()
+            .append('path')                     
+            .attr('d', path)
+            .attr('fill', 'gray');
+        
+      $.get(`/position`, function (locations, status) {
            svg.selectAll('circle')
                     .data(locations)
                     .enter()
                     .append('circle')
-                    .attr('cx', function(d) {return projection([d.lon, d.lat])[0]})
-                    .attr('cy', function(d) {return projection([d.lon, d.lat])[1]})
-                    .attr('r', 4)
+                    .attr('cx', function(d) {return projection([d.Long, d.Lat])[0]})
+                    .attr('cy', function(d) {return projection([d.Long, d.Lat])[1]})
+                    .attr('r', 3)
                    .on("mouseover", function(b){
-                       console.log("binish", b)
                        d3.select(this).style("fill", "red").append('text')
-                       .text("hi");
+                   })
+                  .on("click", function(b){
+                       alert("Patient Name:  " + b.username);
                    })
                    .on("mouseout", function(){d3.select(this).style("fill", "blue");
                    });
@@ -105,7 +106,10 @@
 
 
         });
-        });
+});
+      
+      
+
 
 
     </script>

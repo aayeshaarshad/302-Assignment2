@@ -3,12 +3,49 @@
   <head>
     <meta name="description" content="Points Along an Archimedean Spiral" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <!-- <script type="text/javascript" src="https://d3js.org/d3.v2.js"></script>
-     -->
-     <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+     <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
   </head>
   <body>
-    <div id="chart"></div>
+    <div id="chart">
     <script type="text/javascript" src="index.js"></script>
+      </div>
+
+<script>
+
+
+
+document.getElementById("chart").addEventListener("click", clickHandler, false);
+function clickHandler(e) {
+  const comment = prompt("Please enter the comments");
+  var cursorX = e.clientX;
+  var cursorY = e.clientY;
+  drawComment(comment, cursorX, cursorY);
+  //console.log("comment"  + comment + " xaxis " + cursorX);
+}
+
+function drawComment(comment, cursorX, cursorY){
+
+  const annotations = [
+  {
+    note: {
+      label: comment
+    },
+    x: cursorX,
+    y: cursorY,
+    dy: 10,
+    dx: 10
+  }]
+
+  const makeAnnotations = d3.annotation()
+  .annotations(annotations)
+
+  d3.select("svg")
+  .append("g")
+  .call(makeAnnotations)
+  
+}
+
+</script>
   </body>
 </html>

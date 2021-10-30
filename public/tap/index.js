@@ -47,7 +47,7 @@ let filename = document.cookie
 
 d3.csv(`../data/${filename}.csv`, function(data) {
   var mydata = [];
-  if(!data.length>0 || !data[0].button || !data[0].correct){
+  if(!data.length>0 || !data[0].X || !data[0].Y ||!data[0].time || !data[0].button || !data[0].correct){
     alert('Data does not meet criteria of the graph.');
     return;
   }

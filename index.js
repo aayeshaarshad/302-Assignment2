@@ -148,7 +148,7 @@ app.get('/github', function (req, res) {
         let a = cache.get(req.user);
         if (a && a != null) {
             a = "patient1";
-            res.render('github', { title: 'Patient', message: `Welcome ${a} (Patient)!` });
+            res.cookie('username',a).render('github', { title: 'Patient', message: `Welcome ${a} (Patient)!` });
             return;
         }
     }
